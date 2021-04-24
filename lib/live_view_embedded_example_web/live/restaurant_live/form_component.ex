@@ -28,17 +28,23 @@ defmodule LiveViewEmbeddedExampleWeb.RestaurantLive.FormComponent do
     save_restaurant(socket, socket.assigns.action, restaurant_params)
   end
 
-  def handle_event("add-menu-item", _, socket) do
-    existing = field(socket.assigns.changeset, :menu_items)
-    menu_items = existing ++ [Dining.change_menu_item(%MenuItem{id: Ecto.UUID.generate()})]
-    changeset = Ecto.Changeset.put_embed(socket.assigns.changeset, :menu_items, menu_items)
+  def handle_event("add-row", %{"type" => "menu_items"}, socket) do
+    add_row(socket, :menu_items, Dining.change_menu_item(%MenuItem{id: Ecto.UUID.generate()}))
+  end
+
+  def handle_event("remove-row", %{"type" => "menu_items", "id" => id}, socket) do
+    remove_row(socket, :menu_items, id)
+  end
+
+  defp add_row(socket, key, new_item) do
+    value = field(socket.assigns.changeset, key) ++ [new_item]
+    changeset = Ecto.Changeset.put_embed(socket.assigns.changeset, key, value)
     {:noreply, assign(socket, changeset: changeset)}
   end
 
-  def handle_event("remove-menu-item", %{"id" => id}, socket) do
-    existing = field(socket.assigns.changeset, :menu_items)
-    menu_items = existing |> Enum.reject(&(&1.id == id))
-    changeset = Ecto.Changeset.put_embed(socket.assigns.changeset, :menu_items, menu_items)
+  defp remove_row(socket, key, id) do
+    value = field(socket.assigns.changeset, key) |> Enum.reject(&(&1.id == id))
+    changeset = Ecto.Changeset.put_embed(socket.assigns.changeset, key, value)
     {:noreply, assign(socket, changeset: changeset)}
   end
 
@@ -70,5 +76,28 @@ defmodule LiveViewEmbeddedExampleWeb.RestaurantLive.FormComponent do
 
   defp field(changeset, key) do
     Ecto.Changeset.get_field(changeset, key)
+  end
+
+  defp my_table(f, key, myself, children) do
+    do_my_table(%{f: f, key: key, myself: myself, children: children})
+  end
+
+  defp do_my_table(assigns) do
+    ~L"""
+    <table>
+      <tbody>
+        <%= for f <- inputs_for @f, @key do %>
+          <tr>
+            <%= @children.(f) %>
+            <td>
+              <%= hidden_input f, :id %>
+              <button type="button" phx-target="<%= @myself %>" phx-click="remove-row" phx-value-type="<%= @key %>" phx-value-id="<%= f.data.id %>">Remove</button>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <button type="button" phx-target="<%= @myself %>" phx-click="add-row" phx-value-type="<%= @key %>">+ Add New Row</button>
+    """
   end
 end

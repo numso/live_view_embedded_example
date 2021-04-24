@@ -23,34 +23,23 @@
   <% end %>
 
   <%= label f, :menu_items %>
-  <table>
-    <tbody>
-      <%= for mi <- inputs_for f, :menu_items do %>
-        <tr>
-          <td>
-            <%= label mi, :name %>
-            <%= text_input mi, :name %>
-            <%= error_tag mi, :name %>
-          </td>
-          <td>
-            <%= label mi, :price %>
-            <%= text_input mi, :price %>
-            <%= error_tag mi, :price %>
-          </td>
-          <td>
-            <%= label mi, :type %>
-            <%= select mi, :type, [:appetizer, :drink, :dessert, :soup, :salad, :entree] %>
-            <%= error_tag mi, :type %>
-          </td>
-          <td>
-              <%= hidden_input mi, :id %>
-            <button type="button" phx-target="<%= @myself %>" phx-click="remove-menu-item" phx-value-id="<%= mi.data.id %>">Remove</button>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <button type="button" phx-target="<%= @myself %>" phx-click="add-menu-item">+ Add New Menu Item</button>
+  <%= my_table f, :menu_items, @myself, fn mi -> %>
+    <td>
+      <%= label mi, :name %>
+      <%= text_input mi, :name %>
+      <%= error_tag mi, :name %>
+    </td>
+    <td>
+      <%= label mi, :price %>
+      <%= text_input mi, :price %>
+      <%= error_tag mi, :price %>
+    </td>
+    <td>
+      <%= label mi, :type %>
+      <%= select mi, :type, [:appetizer, :drink, :dessert, :soup, :salad, :entree] %>
+      <%= error_tag mi, :type %>
+    </td>
+  <% end %>
   <%= error_tag f, :menu_items %>
 
   <br />
