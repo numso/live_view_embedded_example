@@ -7,6 +7,7 @@ defmodule LiveViewEmbeddedExample.Dining do
   alias LiveViewEmbeddedExample.Repo
 
   alias LiveViewEmbeddedExample.Dining.Restaurant
+  alias LiveViewEmbeddedExample.Dining.Restaurant.MenuItem
 
   @doc """
   Returns the list of restaurants.
@@ -100,5 +101,9 @@ defmodule LiveViewEmbeddedExample.Dining do
   """
   def change_restaurant(%Restaurant{} = restaurant, attrs \\ %{}) do
     Restaurant.changeset(restaurant, attrs)
+  end
+
+  def change_menu_item(%MenuItem{} = menu_item, attrs \\ %{}) do
+    Restaurant.menu_item_changeset(menu_item, attrs)
   end
 end
