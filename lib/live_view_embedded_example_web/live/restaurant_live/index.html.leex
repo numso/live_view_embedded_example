@@ -1,0 +1,41 @@
+<h1>Listing Restaurants</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, LiveViewEmbeddedExampleWeb.RestaurantLive.FormComponent,
+    id: @restaurant.id || :new,
+    title: @page_title,
+    action: @live_action,
+    restaurant: @restaurant,
+    return_to: Routes.restaurant_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Rating</th>
+      <th>Menu items</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="restaurants">
+    <%= for restaurant <- @restaurants do %>
+      <tr id="restaurant-<%= restaurant.id %>">
+        <td><%= restaurant.name %></td>
+        <td><%= restaurant.location %></td>
+        <td><%= restaurant.rating %></td>
+        <td><%= restaurant.menu_items %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.restaurant_show_path(@socket, :show, restaurant) %></span>
+          <span><%= live_patch "Edit", to: Routes.restaurant_index_path(@socket, :edit, restaurant) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: restaurant.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Restaurant", to: Routes.restaurant_index_path(@socket, :new) %></span>
